@@ -1,15 +1,21 @@
 package main
 
 import (
-	"fmt"
+	"encoding/json"
 	"net/http"
 )
 
-func hello(w http.ResponseWriter, req *http.Request) {
-	fmt.Fprintf(w, "hello\n")	
+func helloHandler(w http.ResponseWriter, req *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	resp := map[string]string {
+		"service": "backend-a",
+		"message": "hello from backend-a",
+	}
+	// Should change this to handle errors
+	_ = json.NewEncoder(w).Encode(resp)
 }
 
 func main() {
-	http.HandleFunc("/hello", hello)
+	http.HandleFunc("/hello", helloHandler)
 	http.ListenAndServe(":8081", nil)
 }
