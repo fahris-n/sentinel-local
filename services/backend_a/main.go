@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"encoding/json"
 	"net/http"
 )
@@ -13,6 +14,7 @@ func helloHandler(w http.ResponseWriter, req *http.Request) {
 	}
 	// Should change this to handle errors
 	_ = json.NewEncoder(w).Encode(resp)
+	log.Println("backend path:", req.URL.Path)
 }
 
 func main() {

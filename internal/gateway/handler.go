@@ -1,6 +1,7 @@
 package gateway
 
 import (
+	"log"
 	"net/http"
 	"net/http/httputil"
 )
@@ -16,5 +17,6 @@ func NewHandler(helloProxy *httputil.ReverseProxy) *Handler {
 }
 
 func (h *Handler) HelloHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println("HelloHandler hit")
 	h.HelloProxy.ServeHTTP(w, r)
 }

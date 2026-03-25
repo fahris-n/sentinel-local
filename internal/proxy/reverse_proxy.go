@@ -15,6 +15,7 @@ func NewReverseProxy() (*httputil.ReverseProxy, error) {
 		Rewrite: func(r *httputil.ProxyRequest) {
 			r.SetURL(targetURL)
 			r.SetXForwarded()
+			r.Out.URL.Path = "/hello"
 		},
 	}
 
