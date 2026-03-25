@@ -10,7 +10,10 @@ import (
 
 func main() {
 	// create reverse proxy obj
-	helloProxy, err := proxy.NewReverseProxy()
+	// PLACEHOLDER
+	targetURL := "http://localhost:8081"
+	backendPath := "/hello"
+	helloProxy, err := proxy.NewReverseProxy(targetURL, backendPath)
 	if err != nil {
 		log.Fatal(err)
 	}
