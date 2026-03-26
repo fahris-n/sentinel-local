@@ -5,8 +5,8 @@ import (
 	"net/url"
 )
 
-func NewReverseProxy() (*httputil.ReverseProxy, error) {
-	targetURL, err := url.Parse("http://localhost:8081")
+func NewReverseProxy(targetRaw string, backendPath string) (*httputil.ReverseProxy, error) {
+	targetURL, err := url.Parse(targetRaw)
 	if err != nil {
 		return nil, err
 	}
@@ -15,7 +15,7 @@ func NewReverseProxy() (*httputil.ReverseProxy, error) {
 		Rewrite: func(r *httputil.ProxyRequest) {
 			r.SetURL(targetURL)
 			r.SetXForwarded()
-			r.Out.URL.Path = "/hello"
+			r.Out.URL.Path = backendPath 
 		},
 	}
 

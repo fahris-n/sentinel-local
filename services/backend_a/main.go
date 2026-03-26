@@ -19,5 +19,6 @@ func helloHandler(w http.ResponseWriter, req *http.Request) {
 
 func main() {
 	http.HandleFunc("/hello", helloHandler)
+	log.Println("backend_a listening on port :8081")
 	http.ListenAndServe(":8081", nil)
 }

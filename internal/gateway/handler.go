@@ -7,16 +7,18 @@ import (
 )
 
 type Handler struct {
-	HelloProxy *httputil.ReverseProxy
+	RouteMap map[string]*httputil.ReverseProxy
 }
 
-func NewHandler(helloProxy *httputil.ReverseProxy) *Handler {
+func NewHandler(routeMap map[string]*httputil.ReverseProxy) *Handler {
 	return &Handler{
-		HelloProxy: helloProxy,
+		RouteMap: routeMap,
 	}
 }
 
-func (h *Handler) HelloHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println("HelloHandler hit")
-	h.HelloProxy.ServeHTTP(w, r)
+func (h *Handler) HandleRequest(w http.ResponseWriter, r *http.Request) {
+	log.Println("HandleRequest hit")
+	log.Println(r.URL.Path)
+	proxy := h.RouteMap[r.URL.Path]
+	proxy.ServeHTTP(w, r)
 }
