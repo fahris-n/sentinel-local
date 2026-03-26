@@ -1,8 +1,7 @@
 routes:
-  - path: "api/hello"
+  - path: "/api/hello"
     backend: "http://localhost:8081"
     backendPath: "/hello"
-  - path: "api/register"
+  - path: "/api/register"
     backend: "http://localhost:8082"
     backendPath: "/register"
-
