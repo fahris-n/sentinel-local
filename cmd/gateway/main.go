@@ -4,27 +4,47 @@ import (
 	"log"
 	"net/http"
 	"net/http/httputil"
+	"os"
+	"gopkg.in/yaml.v3"
 
 	"github.com/fahris-n/sentinel-local/internal/gateway"
 	"github.com/fahris-n/sentinel-local/internal/proxy"
 )
 
-func main() {
-	// Create proxies for every path we want to support
-	// on each backend we want to support
-	helloProxy, err := proxy.NewReverseProxy("http://localhost:8081", "/hello")
+type RouteConfig struct {
+	Path        string `yaml:"path"`
+	Backend     string `yaml:"backend"`
+	BackendPath string `yaml:"backendPath"`
+}
+
+type Config struct {
+	Routes []RouteConfig `yaml:"routes"`
+}
+
+func LoadConfig(path string) (Config, error) {
+	var cfg Config
+	yamlFile, err := os.ReadFile(path)
 	if err != nil {
-		log.Fatal(err)
+		log.Printf("yamlFile.Get err	#%v", err)
 	}
-	registerProxy, err := proxy.NewReverseProxy("http://localhost:8082", "/register")
+	err = yaml.Unmarshal(yamlFile, &cfg)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Unmarshal: %v", err)
 	}
 
-	// generate proxy map
-	routeMap := map[string]*httputil.ReverseProxy{
-		"/api/hello":    helloProxy,
-		"/api/register": registerProxy,
+	return cfg, nil
+}
+
+func main() {
+	routeMap := map[string]*httputil.ReverseProxy{}
+	cfg,_ := LoadConfig("configs/config.yaml")
+
+	for _, route := range cfg.Routes {
+		proxy, err := proxy.NewReverseProxy(route.Backend, route.BackendPath)
+		if err != nil {
+			log.Fatal(err)
+		}
+		routeMap[route.Path] = proxy
 	}
 
 	// create handler and pass proxy map
