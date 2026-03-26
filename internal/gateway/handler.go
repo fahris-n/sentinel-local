@@ -17,7 +17,8 @@ func NewHandler(routeMap map[string]*httputil.ReverseProxy) *Handler {
 }
 
 func (h *Handler) HandleRequest(w http.ResponseWriter, r *http.Request) {
-	log.Println("HelloHandler hit")
+	log.Println("HandleRequest hit")
+	log.Println(r.URL.Path)
 	proxy := h.RouteMap[r.URL.Path]
 	proxy.ServeHTTP(w, r)
 }
