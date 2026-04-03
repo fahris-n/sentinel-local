@@ -7,6 +7,7 @@ import (
 	"os"
 	"gopkg.in/yaml.v3"
 
+	"github.com/joho/godotenv"
 	"github.com/fahris-n/sentinel-local/internal/gateway"
 	"github.com/fahris-n/sentinel-local/internal/proxy"
 )
@@ -36,6 +37,12 @@ func LoadConfig(path string) (Config, error) {
 }
 
 func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("error loading .env file")
+	}
+
 	routeMap := map[string]*httputil.ReverseProxy{}
 	cfg,_ := LoadConfig("configs/config.yaml")
 
