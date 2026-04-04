@@ -15,7 +15,7 @@ func NewHandler(routeMap map[string]*httputil.ReverseProxy) *Handler {
 	}
 }
 
-func (h *Handler) HandleRequest(w http.ResponseWriter, r *http.Request) {
+func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	proxy, ok := h.RouteMap[r.URL.Path]
 	if !ok {
 		http.NotFound(w, r)

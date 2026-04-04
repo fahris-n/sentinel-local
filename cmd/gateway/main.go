@@ -5,11 +5,13 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"os"
+
 	"gopkg.in/yaml.v3"
 
-	"github.com/joho/godotenv"
 	"github.com/fahris-n/sentinel-local/internal/gateway"
+	"github.com/fahris-n/sentinel-local/internal/middleware"
 	"github.com/fahris-n/sentinel-local/internal/proxy"
+	"github.com/joho/godotenv"
 )
 
 type RouteConfig struct {
@@ -37,14 +39,13 @@ func LoadConfig(path string) (Config, error) {
 }
 
 func main() {
-
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("error loading .env file")
 	}
 
 	routeMap := map[string]*httputil.ReverseProxy{}
-	cfg,_ := LoadConfig("configs/config.yaml")
+	cfg, _ := LoadConfig("configs/config.yaml")
 
 	for _, route := range cfg.Routes {
 		proxy, err := proxy.NewReverseProxy(route.Backend, route.BackendPath)
@@ -54,9 +55,14 @@ func main() {
 		routeMap[route.Path] = proxy
 	}
 
-	// create handler and pass proxy map
 	handler := gateway.NewHandler(routeMap)
-	http.HandleFunc("/api/", handler.HandleRequest)
+	wrappedHandler := middleware.Chain(
+		handler,
+		middleware.Logging,
+		middleware.AuthMiddleware,
+	)
+
+	http.Handle("/api/", wrappedHandler)
 
 	log.Println("gateway listening on :8080")
 	if err := http.ListenAndServe(":8080", nil); err != nil {
