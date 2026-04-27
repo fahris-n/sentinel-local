@@ -15,9 +15,11 @@ import (
 )
 
 type RouteConfig struct {
-	Path        string `yaml:"path"`
-	Backend     string `yaml:"backend"`
-	BackendPath string `yaml:"backendPath"`
+	Path         string   `yaml:"path"`
+	Backend      string   `yaml:"backend"`
+	BackendPath  string   `yaml:"backendPath"`
+	RequiresAuth bool     `yaml:"requiresAuth"`
+	AllowedRoles []string `yaml:"allowedRoles"`
 }
 
 type Config struct {
