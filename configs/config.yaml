@@ -2,6 +2,14 @@ routes:
   - path: "/api/hello"
     backend: "http://localhost:8081"
     backendPath: "/hello"
+    requiresAuth: true
+    allowedRoles: 
+      - user
+      - premium
   - path: "/api/register"
     backend: "http://localhost:8082"
     backendPath: "/register"
+    requiresAuth: true
+    allowedRoles: 
+      - user
+      - premium
