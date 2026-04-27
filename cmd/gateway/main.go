@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
@@ -28,13 +29,15 @@ type Config struct {
 
 func LoadConfig(path string) (Config, error) {
 	var cfg Config
+
 	yamlFile, err := os.ReadFile(path)
 	if err != nil {
-		log.Printf("yamlFile.Get err	#%v", err)
+		return cfg, fmt.Errorf("failed to read config file: %w", err)
 	}
+
 	err = yaml.Unmarshal(yamlFile, &cfg)
 	if err != nil {
-		log.Fatalf("Unmarshal: %v", err)
+		return cfg, fmt.Errorf("failed to parse config file: %w", err)
 	}
 
 	return cfg, nil
@@ -47,7 +50,10 @@ func main() {
 	}
 
 	routeMap := map[string]*httputil.ReverseProxy{}
-	cfg, _ := LoadConfig("configs/config.yaml")
+	cfg, err := LoadConfig("configs/config.yaml")
+	if err != nil {
+		log.Fatalf("failed to load config: %v", err)
+	}
 
 	for _, route := range cfg.Routes {
 		proxy, err := proxy.NewReverseProxy(route.Backend, route.BackendPath)
