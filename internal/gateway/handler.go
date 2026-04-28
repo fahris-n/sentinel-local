@@ -2,24 +2,25 @@ package gateway
 
 import (
 	"net/http"
-	"net/http/httputil"
+
+	"github.com/fahris-n/sentinel-local/internal/routing"
 )
 
 type Handler struct {
-	RouteMap map[string]*httputil.ReverseProxy
+	RouteMap map[string]*routing.RouteEntry
 }
 
-func NewHandler(routeMap map[string]*httputil.ReverseProxy) *Handler {
+func NewHandler(routeMap map[string]*routing.RouteEntry) *Handler {
 	return &Handler{
 		RouteMap: routeMap,
 	}
 }
 
 func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	proxy, ok := h.RouteMap[r.URL.Path]
+	route, ok := h.RouteMap[r.URL.Path]
 	if !ok {
 		http.NotFound(w, r)
 		return
 	}
-	proxy.ServeHTTP(w, r)
+	route.Proxy.ServeHTTP(w, r)
 }
