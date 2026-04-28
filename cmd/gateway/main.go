@@ -1,47 +1,16 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"net/http/httputil"
-	"os"
-
-	"gopkg.in/yaml.v3"
 
 	"github.com/fahris-n/sentinel-local/internal/gateway"
 	"github.com/fahris-n/sentinel-local/internal/middleware"
 	"github.com/fahris-n/sentinel-local/internal/proxy"
+	"github.com/fahris-n/sentinel-local/internal/config"
 	"github.com/joho/godotenv"
 )
-
-type RouteConfig struct {
-	Path         string   `yaml:"path"`
-	Backend      string   `yaml:"backend"`
-	BackendPath  string   `yaml:"backendPath"`
-	RequiresAuth bool     `yaml:"requiresAuth"`
-	AllowedRoles []string `yaml:"allowedRoles"`
-}
-
-type Config struct {
-	Routes []RouteConfig `yaml:"routes"`
-}
-
-func LoadConfig(path string) (Config, error) {
-	var cfg Config
-
-	yamlFile, err := os.ReadFile(path)
-	if err != nil {
-		return cfg, fmt.Errorf("failed to read config file: %w", err)
-	}
-
-	err = yaml.Unmarshal(yamlFile, &cfg)
-	if err != nil {
-		return cfg, fmt.Errorf("failed to parse config file: %w", err)
-	}
-
-	return cfg, nil
-}
 
 func main() {
 	err := godotenv.Load()
@@ -50,7 +19,7 @@ func main() {
 	}
 
 	routeMap := map[string]*httputil.ReverseProxy{}
-	cfg, err := LoadConfig("configs/config.yaml")
+	cfg, err := config.LoadConfig("configs/config.yaml")
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}
