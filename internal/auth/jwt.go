@@ -10,9 +10,11 @@ import (
 func ValidateJWT(tokenString string) (*Claims, error) {
 	secretKey := os.Getenv("SECRET")
 
-	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, func(token *jwt.Token) (any, error) {
+	keyFunc := func(token *jwt.Token) (any, error) {
 		return []byte(secretKey), nil
-	})
+	}
+
+	token, err := jwt.ParseWithClaims(tokenString, &Claims{}, keyFunc)
 	if err != nil {
 		return nil, err
 	}
