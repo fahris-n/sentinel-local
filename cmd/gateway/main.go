@@ -8,6 +8,7 @@ import (
 	"github.com/fahris-n/sentinel-local/internal/gateway"
 	"github.com/fahris-n/sentinel-local/internal/middleware"
 	"github.com/fahris-n/sentinel-local/internal/proxy"
+	"github.com/fahris-n/sentinel-local/internal/ratelimit"
 	"github.com/fahris-n/sentinel-local/internal/routing"
 	"github.com/joho/godotenv"
 )
@@ -42,6 +43,9 @@ func main() {
 		middleware.Logging,
 		middleware.AuthMiddleware(routeMap),
 	)
+
+	// testing Redis connection
+	ratelimit.ConnectToRedis()
 
 	http.Handle("/api/", wrappedHandler)
 
