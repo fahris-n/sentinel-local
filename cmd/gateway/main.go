@@ -8,6 +8,7 @@ import (
 	"github.com/fahris-n/sentinel-local/internal/gateway"
 	"github.com/fahris-n/sentinel-local/internal/middleware"
 	"github.com/fahris-n/sentinel-local/internal/proxy"
+	"github.com/fahris-n/sentinel-local/internal/ratelimit"
 	"github.com/fahris-n/sentinel-local/internal/routing"
 	"github.com/joho/godotenv"
 )
@@ -33,13 +34,26 @@ func main() {
 			Proxy:        proxy,
 			RequiresAuth: route.RequiresAuth,
 			AllowedRoles: route.AllowedRoles,
+			MaxTokens: route.MaxTokens,
+			RefillRate: route.RefillRate,
 		}
 	}
+
+	redisClient, err := ratelimit.ConnectToRedis()
+	if err != nil {
+		log.Fatal(err)
+	}
+	redisScript, err := ratelimit.LoadScript("lua/token_bucket.lua")
+	if err != nil {
+		log.Fatal(err)
+	}
+	limiter := ratelimit.NewLimiter(redisClient, redisScript)
 
 	handler := gateway.NewHandler(routeMap)
 	wrappedHandler := middleware.Chain(
 		handler,
 		middleware.Logging,
+		middleware.RateLimitMiddleware(limiter, routeMap),
 		middleware.AuthMiddleware(routeMap),
 	)
 

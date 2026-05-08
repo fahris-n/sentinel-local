@@ -6,4 +6,6 @@ type RouteEntry struct {
 	Proxy        *httputil.ReverseProxy
 	RequiresAuth bool
 	AllowedRoles []string
+	MaxTokens    int16
+	RefillRate   int16
 }

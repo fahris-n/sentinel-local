@@ -13,6 +13,8 @@ type RouteConfig struct {
 	BackendPath  string   `yaml:"backendPath"`
 	RequiresAuth bool     `yaml:"requiresAuth"`
 	AllowedRoles []string `yaml:"allowedRoles"`
+	MaxTokens    int16    `yaml:"maxTokens"`
+	RefillRate   int16    `yaml:"refillRate"`
 }
 
 type Config struct {
