@@ -6,6 +6,8 @@ routes:
     allowedRoles: 
       - user
       - premium
+    maxTokens: 100 
+    refillRate: 10
   - path: "/api/register"
     backend: "http://localhost:8082"
     backendPath: "/register"
@@ -13,3 +15,6 @@ routes:
     allowedRoles: 
       - user
       - premium
+    maxTokens: 100
+    refillRate: 10
+

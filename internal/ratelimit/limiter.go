@@ -8,19 +8,19 @@ import (
 )
 
 type Limiter struct {
-	Client *redis.Client
-	Script *redis.Script
+	client *redis.Client
+	script *redis.Script
 }
 
 func NewLimiter(client *redis.Client, script *redis.Script) *Limiter {
 	return &Limiter{
-		Client: client,
-		Script: script,
+		client: client,
+		script: script,
 	}
 }
 
-func (l *Limiter) Allow(userId string, maxTokens int16, refillRate int16) (bool, error) {
-	res, err := l.Script.Run(context.Background(), l.Client, []string{userId}, maxTokens, refillRate).Result()
+func (l *Limiter) Allow(key string, maxTokens int16, refillRate int16) (bool, error) {
+	res, err := l.script.Run(context.Background(), l.client, []string{key}, maxTokens, refillRate).Result()
 	if err != nil {
 		return false, fmt.Errorf("failed to query redis: %w", err)
 	}
