@@ -6,9 +6,44 @@ services:
       - '6379:6379'
     volumes:
       - redis-data:/data
+    networks:
+      - app
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
     restart: unless-stopped
+
+  backend_a:
+    build:
+      context:
+        ./services/service_a
+    container_name: service_a
+    ports:
+      - "8081:8081"
+    networks:
+      - app
+
+  backend_b:
+    build:
+      context:
+        ./services/service_b
+    container_name: service_b
+    ports:
+      - "8082:8082"
+    networks:
+      - app
+
+  gateway:
+    build:
+      context: .
+    container_name: gateway
+    ports:
+      - "8080:8080"
+    networks:
+      - app
+    depends_on:
+      - redis
    
 volumes:
   redis-data:
     driver: local
+networks:
+  app:
