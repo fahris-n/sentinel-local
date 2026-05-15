@@ -1,6 +1,6 @@
 routes:
   - path: "/api/hello"
-    backend: "http://localhost:8081"
+    backend: "http://backend_a:8081"
     backendPath: "/hello"
     requiresAuth: true
     allowedRoles: 
@@ -9,7 +9,7 @@ routes:
     maxTokens: 100 
     refillRate: 10
   - path: "/api/register"
-    backend: "http://localhost:8082"
+    backend: "http://backend_b:8082"
     backendPath: "/register"
     requiresAuth: true
     allowedRoles: 

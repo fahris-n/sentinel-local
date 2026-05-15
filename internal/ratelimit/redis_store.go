@@ -10,7 +10,7 @@ import (
 
 func ConnectToRedis() (*redis.Client, error) {
 	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
+		Addr:     "redis:6379",
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 		Protocol: 2,
