@@ -23,6 +23,10 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load config: %v", err)
 	}
+	check := config.ValidateConfig(cfg)
+	if check != nil {
+		log.Fatalf("misconfiguration in config: %v", check)
+	}
 
 	routeMap := map[string]*routing.RouteEntry{}
 	for _, route := range cfg.Routes {
@@ -34,8 +38,8 @@ func main() {
 			Proxy:        proxy,
 			RequiresAuth: route.RequiresAuth,
 			AllowedRoles: route.AllowedRoles,
-			MaxTokens: route.MaxTokens,
-			RefillRate: route.RefillRate,
+			MaxTokens:    route.MaxTokens,
+			RefillRate:   route.RefillRate,
 		}
 	}
 
