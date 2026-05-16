@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-a-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-a
+  template:
+    metadata:
+      labels:
+        app: backend-a
+  spec:
+    containers:
+      - name: backend-a
+        image: sentinel-local-backend_a
+        ports:
+        - containerPort: 8081 
