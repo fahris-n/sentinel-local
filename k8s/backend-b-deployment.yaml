@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-b-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend-b
+  template:
+    metadata:
+      labels:
+        app: backend-b
+    spec:
+      containers:
+        - name: backend-a
+          image: sentinel-local-backend_b
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8082
