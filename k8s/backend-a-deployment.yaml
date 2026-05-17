@@ -11,9 +11,10 @@ spec:
     metadata:
       labels:
         app: backend-a
-  spec:
-    containers:
-      - name: backend-a
-        image: sentinel-local-backend_a
-        ports:
-        - containerPort: 8081 
+    spec:
+      containers:
+        - name: backend-a
+          image: sentinel-local-backend_a
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8081
