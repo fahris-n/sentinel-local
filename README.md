@@ -131,7 +131,9 @@ while building Sentinel — write what you'd say if an interviewer asked about t
 
 ### Why return errors instead of calling `log.Fatal` inside utility functions?
 
-Utility functions should return errors instead of throwing them and crashing the program because you do not want your utility functions making the decisions of how to handle errors. That is the job for the main application logic. For example, if the utility functions for querying the Redis db fails they return an error, allowing the main application logic to handle that how it sees fit. In that example, an `Internal Server Error` is returned to the request since the gateway subscribes to the Fail Closed design state. This flexibility to handle errors in any way we choose is taken away when a program crashes due to errors in utility functions.
+Utility functions should return errors instead of throwing them and crashing the program because you do not want your utility functions making the decisions of how to handle errors. That is the job for the main application logic. For example, if the utility functions for querying the Redis db fail they return an error, allowing the main application logic to handle that how it sees fit. 
+
+In that example, an `Internal Server Error` is returned to the request since the gateway subscribes to the Fail Closed design state. This flexibility to handle errors in any way we choose is taken away when a program crashes due to errors in utility functions.
 
 ### How does Go's middleware chain pattern work? Why do the middlewares wrap in reverse order?
 
