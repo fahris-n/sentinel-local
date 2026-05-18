@@ -124,24 +124,25 @@ done
 
 ## What I Learned
 
-<!-- 
-Fill in each section in your own words. These are the concepts you worked through 
-while building Sentinel — write what you'd say if an interviewer asked about them.
--->
+### Why return errors instead of calling `log.Fatal` inside utility functions? 
+Utility functions should return errors rather than throwing them so that the main application logic may handle the errors in any way deemed fit. 
+For example, if the utility function for querying the Redis db fails an error is returned, allowing the main application logic to handle said error gracefully. 
 
-### Why return errors instead of calling `log.Fatal` inside utility functions?
-
-Utility functions should return errors instead of throwing them and crashing the program because you do not want your utility functions making the decisions of how to handle errors. That is the job for the main application logic. For example, if the utility functions for querying the Redis db fail they return an error, allowing the main application logic to handle that how it sees fit. 
-
-In that example, an `Internal Server Error` is returned to the request since the gateway subscribes to the Fail Closed design state. This flexibility to handle errors in any way we choose is taken away when a program crashes due to errors in utility functions.
+In that example, an `Internal Server Error` is returned to the request since the gateway subscribes to the Fail-Closed pattern. This flexibility to handle errors in any way we choose is taken away when a program crashes due to errors being thrown instead of returned inside utility functions.
 
 ### How does Go's middleware chain pattern work? Why do the middlewares wrap in reverse order?
 
-_Your answer here._
+The middleware chain pattern allows for our `http.Handler` object to be wrapped in any number of middleware objects of our creation. This allows for the easy and clean handling of things such as logging, rate-limiting, and authentication. 
+
+Middlewares are wrapped in reverse order so that the first middleware in the list is the outermost function. Think of the middlewares as being boxes, and the object being wrapped a toy. The last box in the list of boxes gets wrapped first so it's the closest to the toy, and the first box in the list gets wrapped last so its the outermost layer, the first reachable layer.
+
+An example of this is shown in the `Chain.go` section of the [Middleware Docs](https://github.com/fahris-n/sentinel-local/wiki/Middleware#chaingo).
 
 ### What is the closure pattern in Go middleware, and why does `AuthMiddleware` have three nested layers?
 
-_Your answer here._
+Go supports anonymous functions (functions not bound to identifiers) and these anonymous functions can form [closures](https://go.dev/tour/moretypes/25). Closure functions are functions that reference variables from outside their function body.
+
+[`AuthMiddleware`](https://github.com/fahris-n/sentinel-local/wiki/Middleware#auth-middlewarego) has three nested layers since all three layers are ran at different times and the information they capture becomes available at different time. Layer 1 runs once at startup and captures the route map. Layer 2 runs when the handler is wrapped in the `AuthMiddleware` and captures the next http handler. Layer 3 runs for every user request that hits the `AuthMiddleware` and has access to both the route map and next http handler captured above it. 
 
 ### What is the difference between `RouteConfig` and `RouteEntry`, and why are both needed?
 
