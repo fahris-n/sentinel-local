@@ -142,11 +142,15 @@ An example of this is shown in the `Chain.go` section of the [Middleware Docs](h
 
 Go supports anonymous functions (functions not bound to identifiers) and these anonymous functions can form [closures](https://go.dev/tour/moretypes/25). Closure functions are functions that reference variables from outside their function body.
 
-[`AuthMiddleware`](https://github.com/fahris-n/sentinel-local/wiki/Middleware#auth-middlewarego) has three nested layers since all three layers are ran at different times and the information they capture becomes available at different time. Layer 1 runs once at startup and captures the route map. Layer 2 runs when the handler is wrapped in the `AuthMiddleware` and captures the next http handler. Layer 3 runs for every user request that hits the `AuthMiddleware` and has access to both the route map and next http handler captured above it. 
+[`AuthMiddleware`](https://github.com/fahris-n/sentinel-local/wiki/Middleware#auth-middlewarego) has three nested layers since all three layers are ran at different times and the information they capture becomes available at different times. Layer 1 runs once at startup and captures the route map. Layer 2 runs when the handler is wrapped in the AuthMiddleware and captures the next http handler. Layer 3 runs for every user request that hits the AuthMiddleware and has access to both the route map and next http handler captured above it. 
 
 ### What is the difference between `RouteConfig` and `RouteEntry`, and why are both needed?
 
-_Your answer here._
+`RouteConfig` : The struct representing the contents of the config.yaml file used to define backend services. Necessary for parsing and storing the configuration file contents as well as building the correct ReverseProxy objects using the [path, backend, backendPath] fields.
+
+`RouteEntry`  : An intermediary struct used to store the correct ReverseProxy object as well as other configurable fields defined in the config.yaml file (RequiresAuth, AllowedRoles, MaxToken, RefillRate, etc). Necessary because the configurable fields need to be exposed for use by our middlewares (auth and rate limiting)
+
+Both of these structs are necessary since the ReverseProxy objects are built at runtime, not read from YAML.
 
 ### Why use a Lua script for rate limiting instead of handling the logic in Go with separate Redis commands?
 
