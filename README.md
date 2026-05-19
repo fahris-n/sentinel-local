@@ -154,11 +154,21 @@ Both of these structs are necessary since the ReverseProxy objects are built at 
 
 ### Why use a Lua script for rate limiting instead of handling the logic in Go with separate Redis commands?
 
-_Your answer here._
+Lua scripting for redis querying and evaluating the rate limiting logic is atomic. Redis treats the entire Lua script as one uninterrupted command, meaning that we do not have to worry about any race conditions. 
+
+If the read, token bucket math, and writes were sepearte Redis commands in Go then the door opens for race conditions. If two requests came in at the same time, both initially reading with one token remaining, both thinking they can proceed and both decrement to zero, than two requests were just served on one token. The Lua scripting does not allow for this to happen. 
 
 ### What does "fail open" vs "fail closed" mean, and which did you choose for rate limiting?
 
-_Your answer here._
+Fail open and fail closed are two different patterns which decide how services should act when there are failures.
+
+**Problem**: Auth fails or Redis server not available
+
+Fail Open: Backend requests no longer require auth / Redis ratelimiting not enforced
+
+Fail Closed: All backends requiring auth/ratelimiting are no longer accessible
+
+For ratelimiting I specifically chose a fail closed design. I do not want backend services to be available if ratelimiting cannot be enforced. The tradeoff is that a Redis outage takes down the entire gateway. I feel that many teams would prefer a fail open to keep the gateway up and accept the momentary lack of ratelimiting. I do not feel that this would be the case for a service like authentication, as it is a egregious security flaw and fail closed should be used in the vast majority.
 
 ### Why rate limit before auth in the middleware chain?
 
