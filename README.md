@@ -172,19 +172,23 @@ For ratelimiting I specifically chose a fail closed design. I do not want backen
 
 ### Why rate limit before auth in the middleware chain?
 
-_Your answer here._
+Ratelimiting comes before auth in the middleware chaining since there is no point in authenticating a user's request if that user's IP address does not contain enough tokens for the request. Also, ratelimting before auth also helps prevent against abuse. If a bad actor was to spam our gateway with requests, authenticating the JWT on every request is wasteful and we should just take the cheap and easy rejections before ever needing auth.
 
 ### What problem does a Kubernetes Service solve that a Deployment alone doesn't?
 
-_Your answer here._
+A kubernetes service exposes the pods for use. Lets take one of our backend services for example. 
+This backend service has 3 replicas defined by its Deployment file. This means that at all times kubernetes is working towards keeping at least 3 of these backend service pods up and running. Individual pods may go down or more may be spun up in case of heavy traffic. Our gateway does not need to keep track of every individual pod. This is where the Service comes in. The kubernetes service exposes an endpoint that allows for the access of these pods and also acts as a load balancer, balancing requests between all healthy pods in the service.
 
 ### Why should Redis have only one replica in this architecture?
 
-_Your answer here._
+This project only has one Redis instance because we need it to be our single source of truth. The requests token bucket logic depends on this one instance. Adding multiple Redis instances would allow for one gateway pod to check one Redis instance while another gateway pod checks a different one. 
+This is managed in real systems using something called Redis clustering, which is a little overboard for this project.
 
 ### What's the difference between how containers communicate in Docker Compose vs Kubernetes?
 
-_Your answer here._
+In Docker Compose, conatiners communicate across a shared network defined in the docker-compose file as `networks:` and use service names: `redis:6379`. 
+
+In Kubernetes, containers in the same pod share resources and can communicate through things like localhost or IPC. Containers across different pods can communicate by using Services discussed earlier.
 
 ---
 
