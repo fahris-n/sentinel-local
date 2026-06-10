@@ -10,6 +10,5 @@ WORKDIR /root/
 COPY --from=builder /app/main .
 COPY --from=builder /app/configs/config.yaml ./configs/
 COPY --from=builder /app/lua/token_bucket.lua ./lua/
-COPY --from=builder /app/.env .
 EXPOSE 8080
 CMD ["./main"]
