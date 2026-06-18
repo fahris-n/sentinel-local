@@ -16,7 +16,7 @@ import (
 func main() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("error loading .env file")
+		log.Printf("error loading .env file")
 	}
 
 	cfg, err := config.LoadConfig("configs/config.yaml")

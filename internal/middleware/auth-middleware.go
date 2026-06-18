@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"log"
 	"net/http"
 
 	"github.com/fahris-n/sentinel-local/internal/auth"
@@ -26,6 +27,7 @@ func AuthMiddleware(routeMap map[string]*routing.RouteEntry) func(http.Handler) 
 			extractor := &request.BearerExtractor{}
 			tokenStr, err := extractor.ExtractToken(r)
 			if err != nil {
+				log.Printf("Bearer token extraction failed: %v", err)
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
@@ -33,6 +35,7 @@ func AuthMiddleware(routeMap map[string]*routing.RouteEntry) func(http.Handler) 
 			// validate JWT
 			claims, err := auth.ValidateJWT(tokenStr)
 			if err != nil {
+				log.Printf("JWT validation failed: %v", err)
 				http.Error(w, "Unauthorized", http.StatusUnauthorized)
 				return
 			}
