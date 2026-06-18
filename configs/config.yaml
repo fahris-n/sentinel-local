@@ -9,7 +9,7 @@ routes:
     maxTokens: 100 
     refillRate: 10
   - path: "/api/register"
-    backend: "http://backend-b-service:8082"
+    backend: "${BACKEND_B_ADDR}"
     backendPath: "/register"
     requiresAuth: true
     allowedRoles: 

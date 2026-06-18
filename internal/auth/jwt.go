@@ -8,7 +8,7 @@ import (
 )
 
 func ValidateJWT(tokenString string) (*Claims, error) {
-	secretKey := os.Getenv("SECRET")
+	secretKey := os.Getenv("JWT_SECRET")
 
 	keyFunc := func(token *jwt.Token) (any, error) {
 		return []byte(secretKey), nil

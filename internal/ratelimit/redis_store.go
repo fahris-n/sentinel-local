@@ -9,8 +9,14 @@ import (
 )
 
 func ConnectToRedis() (*redis.Client, error) {
+	// fall back to the local service name when REDIS_ADDR isn't set
+	addr := os.Getenv("REDIS_ADDR")
+	if addr == "" {
+		addr = "redis-service:6379"
+	}
+
 	client := redis.NewClient(&redis.Options{
-		Addr:     "redis-service:6379",
+		Addr:     addr,
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0,
 		Protocol: 2,
